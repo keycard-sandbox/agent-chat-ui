@@ -83,7 +83,18 @@ export function decodeFlow(value: string | undefined): PendingFlow | null {
  * bounce a freshly signed-in browser to another origin.
  */
 export function safeReturnTo(value: string | null | undefined): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
+  // The URL parser treats backslashes as slashes for http(s), so "/\evil.com"
+  // resolves to https://evil.com/ despite starting with a single "/". Reject
+  // any second character that a parser can read as a second slash, then prove
+  // the survivor still resolves inside this origin.
+  if (!value || !value.startsWith("/")) return "/";
+  if (value[1] === "/" || value[1] === "\\") return "/";
+  const probe = "https://relative.invalid";
+  try {
+    if (new URL(value, probe).origin !== probe) return "/";
+  } catch {
+    return "/";
+  }
   return value;
 }
 

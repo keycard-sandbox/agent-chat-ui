@@ -58,7 +58,12 @@ export function useKeycardSession() {
   }, [refresh]);
 
   const signOut = useCallback(async () => {
-    await fetch("/api/keycard/session", { method: "DELETE" });
+    try {
+      await fetch("/api/keycard/session", { method: "DELETE" });
+    } catch {
+      // A failed network call must not strand the UI in a signed-in shell;
+      // the reload below re-reads the real session state either way.
+    }
     await refresh();
     window.location.reload();
   }, [refresh]);
