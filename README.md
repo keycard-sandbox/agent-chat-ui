@@ -252,3 +252,19 @@ const streamValue = useTypedStream({
   },
 });
 ```
+
+### Keycard Sign-In (this fork)
+
+This fork adds an optional sign-in against a [Keycard](https://keycard.ai) zone, so the LangGraph server authenticates each caller with their own bearer instead of trusting a shared key. It is the client half of a deployment whose server verifies zone-issued bearers with LangGraph custom authentication.
+
+With `KEYCARD_ZONE_URL` or `KEYCARD_CLIENT_ID` unset, every route and control below disables itself and the app behaves exactly like stock upstream.
+
+How it works:
+
+1. `GET /api/keycard/login` begins a server-side authorization code flow with PKCE against the zone, scoped to the resource in `KEYCARD_AGENT_RESOURCE`, so the issued token is audienced at your LangGraph server and it can exchange the token onward per tool call. The PKCE verifier and CSRF state live in a short-lived httpOnly cookie, per browser, so the verifier is never a value client JavaScript can read and two people signing in at once do not interfere.
+2. `GET /api/keycard/callback` redeems the code and stores the access token in an httpOnly, secure, `sameSite=lax` cookie.
+3. The API passthrough at `src/app/api/[..._path]/route.ts` reads that cookie and sends it as `Authorization` on every proxied request. The token never reaches client JavaScript, and each browser carries its own, so one deployment serves many callers.
+4. `GET /api/keycard/session` reports whether this browser is signed in, and `DELETE` on the same route signs it out. Neither returns the token.
+5. A 401 or 403 from the server sends the browser to the login route.
+
+Because the bearer is attached by the proxy, the chat must talk to the proxy: set `NEXT_PUBLIC_API_URL` to your own site plus `/api`, and `LANGGRAPH_API_URL` to your LangGraph server. See `.env.example` for the full contract. Leave `LANGSMITH_API_KEY` unset: a zone-authenticated server does not need it, and the proxy stops forwarding it once a caller is signed in.

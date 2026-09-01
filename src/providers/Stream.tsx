@@ -23,6 +23,10 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowRight } from "lucide-react";
 import { PasswordInput } from "@/components/ui/password-input";
 import { getApiKey } from "@/lib/api-key";
+import {
+  isUnauthorized,
+  useKeycardSession,
+} from "@/lib/keycard/use-keycard-session";
 import { useThreads } from "./Thread";
 import { toast } from "sonner";
 
@@ -83,6 +87,12 @@ const StreamSession = ({
 }) => {
   const [threadId, setThreadId] = useQueryState("threadId");
   const { getThreads, setThreads } = useThreads();
+  // With Keycard configured, the API passthrough attaches the signed-in
+  // browser's bearer server side, so there is no token to thread through
+  // defaultHeaders here. What the client still owns is the unauthenticated
+  // case: a 401 or 403 means this browser has no valid bearer, so send it to
+  // the zone to get one.
+  const keycard = useKeycardSession();
   const streamValue = useTypedStream({
     apiUrl,
     apiKey: apiKey ?? undefined,
@@ -101,6 +111,9 @@ const StreamSession = ({
           return { ...prev, ui };
         });
       }
+    },
+    onError: (error) => {
+      if (keycard.session.enabled && isUnauthorized(error)) keycard.signIn();
     },
     onThreadId: (id) => {
       setThreadId(id);

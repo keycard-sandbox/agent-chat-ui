@@ -28,6 +28,9 @@ importers:
 
   .:
     dependencies:
+      '@keycardai/oauth':
+        specifier: 0.22.0
+        version: 0.22.0
       '@langchain/core':
         specifier: ^1.2.5
         version: 1.2.5(openai@4.100.0(zod@4.4.3))
@@ -699,6 +702,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@keycardai/oauth@0.22.0':
+    resolution: {integrity: sha512-AR69G3DrCUIqTTtlGY/QLMV8XcBAARC+cJhfRGNAuOK/q7kQxpEuQ0wOgvTEiz0WwxVbZgCZL5Wya1dFYirXVQ==}
 
   '@langchain/core@1.2.5':
     resolution: {integrity: sha512-4lXj3fTPQYGdEtOG9gWDnvmp6wpXNMo9MmWzfZxxPUxMcjulZJa93pYAZ90luFLg2YVdVuUl2tuwdD7tY5K9MA==}
@@ -3639,6 +3645,9 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
@@ -4049,6 +4058,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@keycardai/oauth@0.22.0':
+    dependencies:
+      zod: 3.25.76
 
   '@langchain/core@1.2.5(openai@4.100.0(zod@4.4.3))':
     dependencies:
@@ -7471,6 +7484,8 @@ snapshots:
   zod-validation-error@4.0.2(zod@4.4.3):
     dependencies:
       zod: 4.4.3
+
+  zod@3.25.76: {}
 
   zod@4.4.3: {}
 
